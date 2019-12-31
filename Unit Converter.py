@@ -5,6 +5,7 @@ def input_data_output_calculation():
     print("1. Enter conversions in the format <value> <initial units> to <converted units>. e.g. 5 metres to kilometres")
     print("2. Use full names for units e.g. kilograms and not kilos")
     print("3. When entering units, enter with a '/' character instead of 'per' e.g. 10 metres/second")
+    print("4. If a unit has more than one word e.g. 'football fields' use a '&' between the characters instead of a space character e.g. 1 football&field to metres")
     while valid == False:
         input_string = input("Enter the conversion you want: ")
         valid = validate_conversion(input_string) #validation routine to make sure that the conversion input is typed correctly and is supported
