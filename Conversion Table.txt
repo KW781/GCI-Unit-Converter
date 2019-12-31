@@ -1,0 +1,7 @@
+1metres,1kilograms,1seconds
+1000millimetres,1000000milligrams,1/60minutes
+100centimetres,10000centigrams,1/3600hours
+0.001kilometres,1000grams
+39.3701inches,0.001tonnes
+3.28084feet
+0.000621371miles
