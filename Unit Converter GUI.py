@@ -21,7 +21,8 @@ def convert():
 #button function to close GUI and switch to CLI upon user request
 def switch_interface():
     window.destroy()
-    converter_backend.input_data_output_calculation()
+    while True:
+        converter_backend.input_data_output_calculation()
     
 
 #instantiate Tkinter GUI window    
