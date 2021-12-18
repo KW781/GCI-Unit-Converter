@@ -2,40 +2,44 @@ def input_data_output_calculation():
     valid = False
     #series of rules output to the user for the input of conversions
     print("Rules for entering conversions:")
-    print("1. Enter conversions in the format <value>,<initial units>,<converted units>. e.g. 5 metres to kilometres")
+    print("1. Enter conversions in the format <value> <initial units> to <converted units>. e.g. 5 metres to kilometres")
     print("2. Use full names for units e.g. kilograms and not kilos")
     print("3. When entering units, enter with a '/' character instead of 'per' e.g. 10 metres/second")
     print("4. If a unit has more than one word e.g. 'football fields' use a '&' between the words instead of a space character e.g. 1 football&field to metres")
     while valid == False:
-        input_string = input("Enter the conversion you want: ")
+        input_string = input("Enter the conversion you want: ").lower()
         valid = validate_conversion(input_string) #validation routine to make sure that the conversion input is typed correctly and is supported
-    word_list = input_string.split(',') #creates a list of the words in the input string, splitting them apart by the space characters
+    word_list = input_string.split(' ') #creates a list of the words in the input string, splitting them apart by the space characters
     value = float(word_list[0])
     initial_units = word_list[1].split('/') #extracts the initial units from the input string
-    converted_units = word_list[2].split('/') #extracts the units to be converted to from the input string
+    converted_units = word_list[3].split('/') #extracts the units to be converted to from the input string
     new_value = calculate_new_units(value, initial_units, converted_units) #function calculating the new units using the given units and the value
-    print(str(value) + " " + word_list[1] + " equals " + str(new_value) + " " + word_list[2]) #outputs the conversion after calculation
+    print(str(value) + " " + word_list[1] + " equals " + str(new_value) + " " + word_list[3]) #outputs the conversion after calculation
 
 
 def calculate_new_units(value, initial_units, converted_units):
     #the code below takes care of singulars and plurals input e.g. 'foot' instead of 'feet' because plurals are used in the conversion table
-    if len(initial_units) == 2:
-        if initial_units[1] == "foot":
-            initial_units[1] = "feet"
-        elif initial_units[1] == "inch":
-            initial_units[1] == "inches"
+    for i in range(len(initial_units)):
+        if initial_units[i] == "inch":
+            initial_units[i] = "inches"
+        elif initial_units[i] == "foot":
+            initial_units[i] = "feet"
         else:
-            initial_units[1] = initial_units[1] + 's'
+            #add on an 's' if not already there
+            if (initial_units[i][len(initial_units[i]) - 1] != 's') and (initial_units[i] != "feet"):
+                initial_units[i] += 's'
 
-        if converted_units[1] == "foot":
-            converted_units[1] = "feet"
-        elif converted_units[1] == "inch":
-            converted_units[1] = "inches"
+        if converted_units[i] == "inch":
+            converted_units[i] = "inches"
+        elif converted_units[i] == "foot":
+            converted_units[i] = "feet"
         else:
-            converted_units[1] = converted_units[1] + 's'
-            
+            #add on an 's' if not already there
+            if (converted_units[i][len(converted_units[i]) - 1] != 's') and (converted_units[i] != "feet"):
+                converted_units[i] += 's'      
+
     indices = find_indices(initial_units) #calls upon a function that finds the correct column number (zero indexed) of the conversion table based on the units input
-
+    new_value = value
     for i in range(len(indices)): #loops for the number of units input e.g. 'metres' is 1 unit and 'metres/second' is 2 units
         file = open("Conversion Table.txt", "r") #opens text file containing conversion table
         file_data = "#####" #initialises file_data to a starting value
@@ -48,7 +52,7 @@ def calculate_new_units(value, initial_units, converted_units):
                 unit_value = find_unit_value(units[indices[i]])
                 #actual calculation of units by dividing or multiplying by the unit value, depending on the value of i
                 if i == 0:
-                    new_value = value / unit_value
+                    new_value = new_value / unit_value
                 else:
                     new_value = new_value * unit_value
                 break
@@ -115,9 +119,9 @@ def find_indices(initial_units): #function to find the correct column number (ze
 
 def validate_conversion(input_string): #function to validate the input string and check whether it is a valid conversion
     valid = False #initialises flag variable to indicate whether the input string is valid or not
-    word_list = input_string.split(',') #creates a list of words in the input string, splitting them apart by the space characters
+    word_list = input_string.split(' ') #creates a list of words in the input string, splitting them apart by the space characters
 
-    if len(word_list) == 3: #ensures that there's only 4 words, otherwise the user input the conversion in an invalid format
+    if len(word_list) == 4: #ensures that there's only 4 words, otherwise the user input the conversion in an invalid format
         #the following section of code ensure that the value input is either a floating point number or an integer and doesn't contain any alphabetic characters
         value = word_list[0]
         for i in range(len(value)):
@@ -126,29 +130,33 @@ def validate_conversion(input_string): #function to validate the input string an
             else:
                 valid = False
                 break
-
+        
         if valid == True:
             initial_units = word_list[1].split('/') #extracts the initial units from the input string
-            converted_units = word_list[2].split('/') #extracts the units to be converted to from the input string
+            converted_units = word_list[3].split('/') #extracts the units to be converted to from the input string
 
             if len(initial_units) == len(converted_units): #ensures that the initial units and the units to be converted to have the same number of units e.g. '10 metres/second to metres' is not valid
                 if (len(initial_units) == 1) or (len(initial_units) == 2): #ensures only one or two units is used e.g. '10 metres/second/second to kilometres/hour/hour' is invalid because 3 units are used
                     #the code below takes care of singulars and plurals input e.g. 'foot' instead of 'feet' because plurals are used in the conversion table
-                    if len(initial_units) == 2:
-                        if initial_units[1] == "foot":
-                            initial_units[1] = "feet"
-                        elif initial_units[1] == "inch":
-                            initial_units[1] = "inches"
+                    for i in range(len(initial_units)):
+                        if initial_units[i] == "inch":
+                            initial_units[i] = "inches"
+                        elif initial_units[i] == "foot":
+                            initial_units[i] = "feet"
                         else:
-                            initial_units[1] = initial_units[1] + 's'
+                            #add on an 's' if not already there
+                            if (initial_units[i][len(initial_units[i]) - 1] != 's') and (initial_units[i] != "feet"):
+                                initial_units[i] += 's'
 
-                        if converted_units[1] == "foot":
-                            converted_units[1] = "feet"
-                        elif converted_units[1] == "inch":
-                            converted_units[1] = "inches"
+                        if converted_units[i] == "inch":
+                            converted_units[i] = "inches"
+                        elif converted_units[i] == "foot":
+                            converted_units[i] = "feet"
                         else:
-                            converted_units[1] = converted_units[1] + 's'
-
+                            #add on an 's' if not already there
+                            if (converted_units[i][len(converted_units[i]) - 1] != 's') and (converted_units[i] != "feet"):
+                                converted_units[i] += 's' 
+                    
                     #calls upon find_indices() for both the initial units and the units to be converted to ensure that each unit used is a unit in the conversion table
                     numbers1 = find_indices(initial_units)
                     numbers2 = find_indices(converted_units)
@@ -164,8 +172,6 @@ def validate_conversion(input_string): #function to validate the input string an
                 valid = False
 
     if valid == False:
-        print("Sorry, either that conversion was input incorrectly or it's not supported") #outputs error message if the input string is invalid
+        print("Sorry, either that conversion was input incorrectly or it's not supported. Please refer to the rules of conversion.") #outputs error message if the input string is invalid
 
     return valid
-
-input_data_output_calculation()
