@@ -17,7 +17,7 @@ This is an image of the graphical interface for the app.
 
 You can then click 'Switch to CLI for more advanced features' to close the GUI and open the CLI.
 
-#Command Line Interface
+# Command Line Interface
 This is an image of the command line interface for the app, that would be activated hen the top button is clicked in the GUI.
 
 ![](https://github.com/KW781/GCI-Unit-Converter/blob/master/CLI%20Image.png)
