@@ -4,23 +4,37 @@ converter_backend = __import__("Unit Converter") #imports unit converter back en
 #button function to change the units when the user wants to change quantity e.g. change the units to 'Kilograms' when the user switches to 'Mass'
 def update_quantity():
     quantity_num = quantities_dict.get(quantity.get())
+    #delete the current options from the two options menus
     initial_drop.children["menu"].delete(0, "end")
     final_drop.children["menu"].delete(0, "end")
+    #add the new options to the option menus for the new quantity
     for unit in units[quantity_num]:
         initial_drop.children["menu"].add_command(label = unit, command = tk._setit(initial_unit, unit))
         final_drop.children["menu"].add_command(label = unit, command = tk._setit(final_unit, unit))
+    #set the default value of the option menus to the SI unit of the new quantity
     initial_unit.set(units[quantity_num][0])
     final_unit.set(units[quantity_num][0])
 
+#function to validate the value input into the text box and ensure it's numeric. This is NOT a button function
+def is_valid(value_input):
+    for character in value_input:
+        if not((character >= '0' and character <= '9') or (character == '.')):
+            return False
+    return True
+
 #button function to convert the units, using the converter back end functions
 def convert():
-    new_units = converter_backend.calculate_new_units(float(entry.get()), [initial_unit.get().lower()], [final_unit.get().lower()])
-    conversion_label = tk.Label(window, text = str(entry.get()) + " " + initial_unit.get() + " equals " + str(new_units) + " " + final_unit.get())
-    conversion_label.grid(row = 16, column = 0)
+    if is_valid(entry.get()):
+        new_units = converter_backend.calculate_new_units(float(entry.get()), [initial_unit.get().lower()], [final_unit.get().lower()])
+        conversion_label.configure(text = entry.get() + " " + initial_unit.get() + " equals " + str(new_units) + " " + final_unit.get())
+    else:
+        conversion_label.configure(text = "Please enter a valid value")
+
 
 #button function to close GUI and switch to CLI upon user request
 def switch_interface():
     window.destroy()
+    converter_backend.display_rules()
     while True:
         converter_backend.input_data_output_calculation()
     
@@ -94,6 +108,9 @@ empty_label5.grid(row = 14, column = 0)
 conversion_button = tk.Button(window, text = "Convert", command = convert)
 conversion_button.grid(row = 15, column = 0)
 
+#create the widget to display the conversion. The text for this widget is configured in the button function 'convert'
+conversion_label = tk.Label(window)
+conversion_label.grid(row = 16, column = 0)
 
 window.mainloop()
 
