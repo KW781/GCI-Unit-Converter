@@ -17,6 +17,8 @@ def update_quantity():
 
 #function to validate the value input into the text box and ensure it's numeric. This is NOT a button function
 def is_valid(value_input):
+    if len(value_input) == 0:
+        return False
     for character in value_input:
         if not((character >= '0' and character <= '9') or (character == '.')):
             return False
